@@ -4,8 +4,10 @@
 
 <form method="post">
     {{ form.hidden_tag() }}
+    <p class="text"> {{ form.name.label }} {{ form.name(size=32) }}</p>
     <p class="text"> {{ form.email.label }} {{ form.email(size=32) }}</p>
     <p class="text"> {{ form.password.label }} {{ form.password(size=32) }}</p>
+    <p class="text"> {{ form.repeat_password.label }} {{ form.repeat_password(size=32) }}</p>
     <p class="text">{{ form.submit }}</p>
 </form>
 
