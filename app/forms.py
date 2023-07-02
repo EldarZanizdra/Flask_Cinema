@@ -23,7 +23,6 @@ class AddFilmForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     image = StringField('Image', validators=[DataRequired()])
-    url = StringField('URL', validators=[DataRequired()])
     year = IntegerField('Year', validators=[DataRequired()])
     genre = StringField('Genre', validators=[DataRequired()])
     country = StringField('Country', validators=[DataRequired()])

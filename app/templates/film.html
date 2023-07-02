@@ -3,11 +3,10 @@
 {% block content %}
 
 <h1 class="film_text">{{film_name}}</h1>
-<img src={{ image }}>
+<img src="{{image}}">
 <h2 class="film_text">Genre: {{genre}}</h2>
 <h2 class="film_text">Description: <br>{{description}}</h2>
 <h2 class="film_text">Date: {{year}}</h2>
 <h2 class="film_text">Country: {{country}}</h2>
-<h2><a class="url" href="{{url}}">Link</a></h2>
 
 {% endblock %}

@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from app.forms import RegisterForm, LoginForm, AddFilmForm, FilterForm
 import datetime
@@ -17,20 +17,17 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 app.app_context().push()
 
-all_genres = ('Action film', 'Adventure film', 'Animated film', 'Comedy film',
-              'Drama', 'Fantasy film', 'Historical film', 'Horror film', 'Musical film',
-              'Noir film', 'Romance film', 'Science fiction film', 'Thriller film', 'Western')
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, nullable=False)
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
 
 
 class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    country_name = db.Column(db.String, nullable=False, unique=True)
+    name = db.Column(db.String, nullable=False, unique=True)
 
 
 class Film(db.Model):
@@ -38,30 +35,33 @@ class Film(db.Model):
     film_name = db.Column(db.String, nullable=False, unique=True)
     description = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    url = db.Column(db.String)
-    id_user = db.Column(db.Integer)
-    id_genre = db.Column(db.Integer)
-    id_country = db.Column(db.Integer)
+    genre = db.Column(db.String)
+    country = db.Column(db.Integer, db.ForeignKey("country.id"))
     year = db.Column(db.Integer)
-
 
 
 @app.route('/')
 def home():
     form = FilterForm()
-    return render_template("base.html", form=form, filter=False, title="Home", films=Film.query.all())
+    return render_template("home.html", form=form, filter=False, title="Home", films=Film.query.all())
+
+
+@app.route('/admin')
+def admin():
+    return render_template("admin.html")
+
 
 @login.user_loader
 def user_loader(id):
     return User.query.get(int(id))
 
+
 @app.route('/film/<int:id>')
 def film(id):
     film = Film.query.get(id)
-    return render_template("film.html", name=film.film_name, description=film.description, year=film.year,
-                           image=film.image, url=film.url, poster=User.query.get(film.id_poster).username,
-                           country=Country.query.get(film.id_country).country_name, genre=all_genres[film.id_genre])
+    return render_template("film.html", film_name=film.film_name, description=film.description, year=film.year,
+                           image=film.image, country=Country.query.get(film.country).name, genre=film.genre)
+
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -70,9 +70,9 @@ def register():
         name = form.name.data
         email = form.email.data
         password = form.password.data
-        db.session.add(User(name=name, password=password, email=email))
+        db.session.add(User(username=name, password=password, email=email))
         db.session.commit()
-        login_user(User.query.filter_by(name=name).first(), remember=form.remember.data)
+        login_user(User.query.filter_by(username=name).first(), remember=form.remember.data)
         return redirect('/')
     return render_template("register.html", form=form)
 
@@ -90,3 +90,32 @@ def login():
             return redirect('/login')
         return redirect('/')
     return render_template("login.html", form=form)
+
+
+@app.route('/add_film', methods=["GET", "POST"])
+@login_required
+def add_film():
+    form = AddFilmForm()
+    file = 0
+
+    if request.method == 'POST':
+        file = request.files['image']
+        file.save(f'app/static/image/{file.filename}')
+
+    if form.validate_on_submit():
+        name_country = form.country.data
+
+        if not Country.query.filter_by(name=name_country).first():
+            db.session.add(Country(name=name_country))
+            db.session.commit()
+
+        db.session.add(Film(film_name=form.name.data, description=form.description.data,
+                            image=f'/static/image/{file.filename}', year=form.year.data,
+                            genre=form.genre.data,
+                            country=Country.query.filter_by(name=name_country).first().id))
+        db.session.commit()
+        return redirect('/')
+
+    return render_template("add_film.html", form=form, title="Post new film")
+
+

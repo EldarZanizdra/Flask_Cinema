@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <p class="text"> {{ form.name.label }} {{ form.name(size=32) }}</p>
+
+    <p class="text"> {{ form.description.label }} {{ form.description(size=32) }}</p>
+
+    <p class="text"> {{ form.genre.label }} {{ form.genre(size=32) }}</p>
+
+    <p class="text"> {{ form.country.label }} {{ form.country(size=32) }}</p>
+
+    <p class="text"> {{ form.year.label }} {{ form.year(size=32) }}</p>
+
+    <input class="text" type="file" name="image">
+    <p class="some_text">{{ form.submit }}</p>
+</form>
+
+{% endblock %}

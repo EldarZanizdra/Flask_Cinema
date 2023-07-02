@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if filter %}
+    <h2 class="filter">Filters:</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <p class="text"> {{ form.film_name.label  }} {{ form.film_name(size=32) }}</p>
+        <p class="text"> {{ form.genre.label }} {{ form.genre(size=32) }}</p>
+        <p class="text"> {{ form.country.label }} {{ form.country(size=32) }}</p>
+        <p class="text"> {{ form.year.label }} {{ form.year(size=32) }}</p>
+
+        <p class="text">{{ form.submit }}</p>
+    </form>
+{% endif %}
+{% if filter == False %}
+    <h2><a class="text" href="/filter">Filter</a></h2>
+{% endif %}
+{% for f in films %}
+<h2 class="simple_text">{{f.film_name}} <img src="film.image"><a class="info" href="/film/{{f.id}}">Information</a></h2>
+{% endfor %}
+
+{% endblock %}
