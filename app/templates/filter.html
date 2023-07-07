@@ -9,14 +9,17 @@
             <option value="action">action</option>
             <option value="comedy">comedy</option>
             <option value="drama">drama</option>
+            <option value="romantic">romantic</option>
         </select>
+    <label for="year">Год:</label>
+    <input type="text" name="year" id="year">
         <input type="submit" value="Search">
     </form>
 
    <h2>Results:</h2>
 <ul>
     {% for movie in movies %}
-        {% for f in films %}
+        {% for f in movies %}
             {% if movie.film_name == f.film_name %}
                 <li>{{ movie.film_name }} <a class="info" href="/film/{{ f.id }}">Information</a></li>
             {% endif %}
