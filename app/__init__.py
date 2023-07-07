@@ -42,8 +42,6 @@ class Film(db.Model):
 
 movies = Film.query.all()
 
-movies_by_year = Film.query.all()
-
 
 @app.route('/')
 def home():
@@ -130,13 +128,7 @@ def add_film():
 def filter_by_genre():
     if request.method == 'POST':
         genre = request.form['genre']
-        year = request.form['year']
-        filtered_movies = []
-        for movie in movies:
-            if movie['genre'] == genre and movie['year'] == year:
-                filtered_movies.append(movie)
-            else:
-               return render_template('filter.html', movies=filtered_movies)
+        filtered_movies = filter_movies_by_genre(genre)
         return render_template('filter.html', movies=filtered_movies)
     else:
         return render_template('filter.html', movies=movies)
