@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <h1>Filter</h1>
+    <form method="POST">
+        <label for="genre">Choose genre:</label>
+        <select name="genre" id="genre">
+            <option value="action">action</option>
+            <option value="comedy">comedy</option>
+            <option value="drama">drama</option>
+        </select>
+        <input type="submit" value="Search">
+    </form>
+
+   <h2>Results:</h2>
+<ul>
+    {% for movie in movies %}
+        {% for f in films %}
+            {% if movie.film_name == f.film_name %}
+                <li>{{ movie.film_name }} <a class="info" href="/film/{{ f.id }}">Information</a></li>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</ul>
+</body>
+
+{% endblock %}

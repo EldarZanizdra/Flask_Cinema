@@ -40,10 +40,15 @@ class Film(db.Model):
     year = db.Column(db.Integer)
 
 
+movies = Film.query.all()
+
+
 @app.route('/')
 def home():
+    movies = Film.query.all()
+    films = Film.query.all()
     form = FilterForm()
-    return render_template("home.html", form=form, filter=False, title="Home", films=Film.query.all())
+    return render_template("home.html", form=form, filter=False, title="Home", films=films, movies=movies)
 
 
 @app.route('/admin')
@@ -117,5 +122,20 @@ def add_film():
         return redirect('/')
 
     return render_template("add_film.html", form=form, title="Post new film")
+
+
+@app.route('/filter', methods=['GET', 'POST'])
+def filter():
+    if request.method == 'POST':
+        genre = request.form['genre']
+        filtered_movies = filter_movies_by_genre(genre)
+        return render_template('filter.html', movies=filtered_movies)
+    else:
+        return render_template('filter.html', movies=movies)
+
+def filter_movies_by_genre(genre):
+    filtered_movies = Film.query.filter_by(genre=genre).all()
+    return filtered_movies
+
 
 
